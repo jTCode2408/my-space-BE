@@ -2,7 +2,7 @@
   "name": "my-space-BE",
   "version": "1.0.0",
   "description": "backend for my-space application",
-  "main": "index.js",
+  "main":"index.js",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node index.js",
     "server":"nodemon"
   },
   "repository": {
