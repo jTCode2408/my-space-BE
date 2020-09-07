@@ -15,6 +15,9 @@ const stateKey='spotify_auth_state';
 const request = require('request'); // "Request" library
 const cookieParser = require('cookie-parser');
 
+server.get('/', (req,res)=>{
+    res.send("SERVER UP!")
+});
 
 server.get('/login', function(req, res) {
   res.redirect('https://accounts.spotify.com/authorize?' +
