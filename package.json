@@ -1,0 +1,33 @@
+{
+  "name": "my-space-BE",
+  "version": "1.0.0",
+  "description": "backend for my-space application",
+  "main": "index.js",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "json-web-token": "^3.2.0",
+    "npm": "^6.14.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jTCode2408/my-space-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jTCode2408/my-space-BE/issues"
+  },
+  "homepage": "https://github.com/jTCode2408/my-space-BE#readme"
+}
