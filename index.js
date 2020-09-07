@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const server = require ('./server')
-const PORT = 8888 || process.env.PORT
+const PORT = process.env.PORT || 8888
 
 server.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}. /login to initiate authentication flow.`)
