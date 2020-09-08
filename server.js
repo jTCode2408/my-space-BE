@@ -7,7 +7,6 @@ server.use(express.json());
 
 server.use(cors());
 
-
 const request = require('request'); // "Request" library
 const cookieParser = require('cookie-parser');
 
