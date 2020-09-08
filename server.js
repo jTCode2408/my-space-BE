@@ -1,10 +1,10 @@
 const express = require ('express')
-const server = express()
 const cors = require('cors')
-const querystring =require('querystring');
+const server = express()
 server.use(cors());
+server.options('*', cors());
 server.use(express.json());
-
+const querystring =require('querystring');
 
 const request = require('request'); // "Request" library
 const cookieParser = require('cookie-parser');
