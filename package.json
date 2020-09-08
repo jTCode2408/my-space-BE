@@ -1,5 +1,5 @@
 {
-  "name": "my-space-BE",
+  "name": "my-space-be",
   "version": "1.0.0",
   "description": "backend for my-space application",
   "main":"index.js",
