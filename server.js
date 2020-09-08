@@ -2,10 +2,9 @@ const express = require ('express')
 const server = express()
 const cors = require('cors')
 const querystring =require('querystring');
-
+server.use(cors());
 server.use(express.json());
 
-server.use(cors());
 
 const request = require('request'); // "Request" library
 const cookieParser = require('cookie-parser');
@@ -49,7 +48,7 @@ server.get('/callback', function(req, res) {
   }
   request.post(authOptions, function(error, response, body) {
     var access_token = body.access_token
-    let uri = process.env.FRONTEND_URI || 'http://localhost:3000'
+    let uri = process.env.FRONTEND_URI || 'http://localhost:3000/playlist'
     res.redirect(uri + '?access_token=' + access_token)
   })
 })
