@@ -25,7 +25,7 @@ server.get('/login', function(req, res) {
     querystring.stringify({
       response_type: 'code',
       client_id: process.env.SPOTIFY_CLIENT_ID,
-      scope: 'user-read-recently-played user-top-read playlist-read-private',
+      scope: 'user-read-private, user-read-email, user-read-recently-played user-top-read playlist-read-private',
       redirect_uri
     }))
 })
