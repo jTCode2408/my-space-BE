@@ -2,12 +2,23 @@ const express = require ('express')
 const cors = require('cors')
 const server = express()
 server.use(cors());
-server.options('*', cors());
 server.use(express.json());
+server.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
+
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+    return res.status(200).json({});
+  }
+  next();
+});
+
 const querystring =require('querystring');
 
-const request = require('request'); // "Request" library
+const request = require('request'); 
 const cookieParser = require('cookie-parser');
+const stateKey='spotify_auth_state';
 
 server.get('/', (req,res)=>{
     res.send("SERVER UP!")
@@ -17,7 +28,7 @@ server.get('/', (req,res)=>{
 const redirect_uri=
 process.env.REDIRECT_URI || 
 'http://localhost:8888/callback'
-const stateKey='spotify_auth_state';
+
 
 
 server.get('/login', function(req, res) {
@@ -48,7 +59,7 @@ server.get('/callback', function(req, res) {
   }
   request.post(authOptions, function(error, response, body) {
     var access_token = body.access_token
-    let uri = process.env.FRONTEND_URI || 'http://localhost:3000/playlist'
+    let uri = process.env.FRONTEND_URI || 'https://localhost.3000/playlist'
     res.redirect(uri + '?access_token=' + access_token)
   })
 })
