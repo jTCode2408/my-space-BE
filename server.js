@@ -4,34 +4,32 @@ const cors = require('cors');
 const querystring =require('querystring');
 const cookieParser = require('cookie-parser');
 const jwt=require('jsonwebtoken');
-const { Http2ServerRequest } = require('http2');
 
-const client_id=process.env.SPOTIFY_CLIENT_ID;
-const client_secret=process.env.SPOTIFY_CLIENT_SECRET;
+
+const client_id=process.env.SPOTIFY_CLIENT_ID || '97a6dd834548478295bdb781f20e6f19';
+const client_secret=process.env.SPOTIFY_CLIENT_SECRET || 'b1995e93d7ed4797b0406e4c6c6dab8e';
 const redirect_uri=process.env.REDIRECT_URI || 
 'http://localhost:8888/callback'
 
 //generate  token
-function signToken(){
-  secret=process.env.JWT_SECRET || 'dev mode';
-  const options={
-    expiresIn: '1h'
-  }
-  return jwt.sign(secret,options);
+const randomString = function(length){
+let text = '';
+let possible= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+for ( let i=0; i < length; i++ ){
+  text += possible.charAt(Math.floor(Math.random() * possible.length));
 }
-function decodeToken(jwtToken){
-  algo={algorithm:process.env.JWT_SECRET}
-  jwt.decode(jwtToken, process.env.JWT_SECRET, true, algo)[0]
-}
+return text;
+
+};
 
 const stateKey='spotify_auth_state';
 
-
 const server = express();
+
 server.use(express.static(__dirname + '/public'))
       .use(cors())
-      .use(cookieParser())
-      .use(express.json());
+      .use(cookieParser());
+     // .use(express.json());
 
 
 
@@ -42,7 +40,8 @@ server.get('/', (req,res)=>{
 
 
 server.get('/login', function(req, res) {
-  const state = signToken();
+
+  const state = randomString(16);
   res.cookie(stateKey,state);
 
 const scopes = 'user-read-private user-read-email user-read-recently-played user-top-read playlist-read-private';
@@ -58,7 +57,7 @@ const scopes = 'user-read-private user-read-email user-read-recently-played user
 });
 
 server.get('/callback', function(req, res) {
-  const code = req.query.code || null
+  const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[stateKey] : null;
 
@@ -77,34 +76,37 @@ server.get('/callback', function(req, res) {
         grant_type: 'authorization_code'
       },
       headers: {
-        'Authorization': 'Basic ' + (Buffer.from(
+        'Authorization': 'Basic ' + (new Buffer.from(
           client_id + ':' + client_secret).toString('base64'))
       },
       json: true
-    }
-  }//may need to remove
+    };
+  //may need to remove
 
-  req.post(authOptions, function(error, response, body) {
-if (!error && response.statusCode === 200){
+  request.post(authOptions, function(error, response, body) {
+  if (!error && response.statusCode === 200){
   const access_token = body.access_token,
   refresh_token = body.refresh_token;
 
-    const postOptions = {
+    const options = {
       url: 'https://api.spotify.com/v1/me',
       headers: {'Authorization': 'Bearer' + access_token},
       json:true
     };
 
     //use token to access spotify api
-    request.get(postOptions, function(error, response, body){
+    request.get(options, function(error, response, body){
       console.log('POST BODY', body)
     });
 
 
-
+} 
+});
 }
-  })
-})
+});
+
+
+
 
 server.get('/refresh_token', (req,res)=>{
   //request refresh token
@@ -112,7 +114,7 @@ server.get('/refresh_token', (req,res)=>{
   const authOptions={
     url: 'https://accounts.spotify.com/api/token',
     headers:{
-      'Authorization': 'Basic ' + (Buffer.from(
+      'Authorization': 'Basic ' + (new Buffer.from(
         client_id + ':' + client_secret).toString('base64'))
     },
     form: {
