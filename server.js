@@ -44,7 +44,7 @@ server.get('/login', function(req, res) {
   const state = randomString(16);
   res.cookie(stateKey,state);
 
-const scopes = 'user-read-private user-read-email ';
+const scopes = 'user-read-private user-read-email user-read-recently-played user-top-read playlist-read-private';
 
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -82,15 +82,18 @@ server.get('/callback', function(req, res) {
       },
       json: true
     };
-  //may need to remove
+
 
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
 
-      const access_token = body.access_token,
+      var access_token = body.access_token,
           refresh_token = body.refresh_token;
+//redirect to frontend after auth
+      // let frontUri = process.env.FRONTEND_URI
+      // res.redirect(frontUri + '?access_token=' + access_token)
 
-      const options = {
+      var options = {
         url: 'https://api.spotify.com/v1/me',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
@@ -101,11 +104,8 @@ server.get('/callback', function(req, res) {
         console.log(body);
       });
 
-       //redirect to frontend after auth
-       const frontUri = process.env.FRONTEND_URI || 'http://localhost:3000'
-       res.redirect(frontUri + '?access_token=' + access_token)
-
-      // pass the token to the browser to make requests from there
+      // we can also pass the token to the browser to make requests from there
+      
       res.redirect('/#' +
         querystring.stringify({
           access_token: access_token,
@@ -117,6 +117,8 @@ server.get('/callback', function(req, res) {
           error: 'invalid_token'
         }));
     }
+      //redirect to frontend after login
+  
   });
 }
 });
