@@ -26,10 +26,10 @@ const stateKey='spotify_auth_state';
 
 const server = express();
 
-server.use(express.static(__dirname + '/public'))
-      .use(cors())
-      .use(cookieParser());
-     // .use(express.json());
+server.use(cors())
+      .use(cookieParser())
+      .use(express.json());
+      //.use(express.static(__dirname + '/public'))
 
 
 
@@ -87,13 +87,13 @@ server.get('/callback', function(req, res) {
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
 
-      var access_token = body.access_token,
+      const access_token = body.access_token,
           refresh_token = body.refresh_token;
 //redirect to frontend after auth
       // let frontUri = process.env.FRONTEND_URI
       // res.redirect(frontUri + '?access_token=' + access_token)
 
-      var options = {
+      const options = {
         url: 'https://api.spotify.com/v1/me',
         headers: { 'Authorization': 'Bearer ' + access_token },
         json: true
@@ -117,15 +117,20 @@ server.get('/callback', function(req, res) {
           error: 'invalid_token'
         }));
     }
-      //redirect to frontend after login
-  
+      //need to redirect to frontend after login
+     /* request.post(authOptions, function(error, response, body) {
+        var access_token = body.access_token
+        let uri = process.env.FRONTEND_URI || 'https://localhost:3000'
+        res.redirect(uri + '?access_token=' + access_token)
+      })
+  */
   });
 }
 });
 
 
 
-server.get('/refresh_token', (req,res)=>{
+server.get('/refresh_token', function (req,res){
   //request refresh token
   const refresh_token=req.query.refresh_token;
   const authOptions={
