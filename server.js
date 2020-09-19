@@ -6,8 +6,8 @@ const cookieParser = require('cookie-parser');
 const jwt=require('jsonwebtoken');
 
 
-const client_id=process.env.SPOTIFY_CLIENT_ID || '97a6dd834548478295bdb781f20e6f19';
-const client_secret=process.env.SPOTIFY_CLIENT_SECRET || 'b1995e93d7ed4797b0406e4c6c6dab8e';
+const client_id=process.env.SPOTIFY_CLIENT_ID 
+const client_secret=process.env.SPOTIFY_CLIENT_SECRET
 const redirect_uri=process.env.REDIRECT_URI || 
 'http://localhost:8888/callback'
 
