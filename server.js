@@ -3,9 +3,10 @@ const axios =require('axios');
 const cors = require('cors');
 const querystring =require('querystring');
 const cookieParser = require('cookie-parser');
+//const { response } = require('express');
 
-const client_id=process.env.SPOTIFY_CLIENT_ID 
-const client_secret=process.env.SPOTIFY_CLIENT_SECRET 
+const client_id=process.env.SPOTIFY_CLIENT_ID || '97a6dd834548478295bdb781f20e6f19';
+const client_secret=process.env.SPOTIFY_CLIENT_SECRET || 'b1995e93d7ed4797b0406e4c6c6dab8e';
 const redirect_uri=process.env.REDIRECT_URI || 
 'http://localhost:8888/callback'
 
@@ -49,8 +50,9 @@ server.get('/login', function(req, res) {
     console.log('REDIRECTING', state, scopes, redirect_uri)
 });
 
-
-server.get('/callback', function(req, res) {
+//try to fix:
+//change to async function, use try/await block
+server.get('/callback', async function(req, res) {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -58,65 +60,81 @@ server.get('/callback', function(req, res) {
   if (state === null || state !== storedState){
     res.redirect('/#' + querystring.stringify({
       error:'state_mismatch'
-    }));
+    })
+    );
   } else {
     res.clearCookie(stateKey)
 
-    axios({
-      url: 'https://accounts.spotify.com/api/token',
-      method: 'post',
-      params:{
-        code:code,
-        redirect_uri: redirect_uri,
-        grant_type: 'authorization_code'
-      },
-      headers:{
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      auth:{ 
-      username:client_id,
-      password:client_secret
-    }
-    })
-    .then(res=>{
-      console.log('TOKEN RES', res, code)
-      const accessToken=res.data.access_token,
-            refreshToken=res.data.refresh_token
-
-    axios({
-      url:'https://api.spotify.com/v1/me',
-      headers:{
-        'Accept': 'application/json',
+      const postHeaders={
+        Accept: 'appication/json', 
         'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      params: {
-        grant_type: 'authorization_code',
-        access_token:accessToken,
-        refresh_token:refreshToken
-      }
-    })
-    .then(res=>{
-      console.log('ME RES', res)
-      res.redirect('http://localhost:3000/playlist/#' + querystring.stringify({
-        access_token:access_token,
-        refresh_token:refresh_token
-      })
-      )
-    })
-    .catch(err=>{
-      res.redirect('/#' + querystring.stringify({
-        error: 'invalid token'
-      }))
-      console.log(err)
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-    })
+      };
 
-  }
-});
+      try {
+        let response = await axios ({
+          url: 'https://accounts.spotify.com/api/token',
+          method: 'post',
+          params: {
+            client_id,
+            client_secret,
+            grant_type: 'authorization_code',
+            code:code,
+            redirect_uri: redirect_uri,
+          },
+
+          postHeaders,
+        });
+
+        if (response.status === 200) {
+          const access_token= response.data.access_token;
+          const refresh_token=response.data.refresh_token;
+          const getUrl = 'https://api.spotify.com/v1/me';
+
+          const getHeaders={
+            Accept: 'application/json',
+            'Content-Type': 'application/x-www/form-urlencoded',
+          };
+
+          try {
+            let getRes =await axios({
+              method: 'get',
+              url: getUrl,
+              getHeaders,
+              params:{
+                access_token,
+                refresh_token
+              },
+            });
+
+            if (getRes.status ===200){
+              console.log ('Logging in', getRes.data);
+            }
+
+            res.redirect('http://localhost:3000/playlist/#' + querystring.stringify({
+              access_token:access_token,
+              refresh_token:refresh_token
+            })
+            );
+
+          } catch(err){
+            console.log(err);
+          }
+        } else {
+          res.redirect('/#' + querystring.stringify({
+            error: 'invalid token'
+          })
+          );
+
+        }
+      } catch(err){
+        console.log(err.response);
+
+      }
+  } //end of full try block
+
+    }); //end of call
+    
+    
 
 
 
