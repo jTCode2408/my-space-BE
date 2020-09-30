@@ -3,12 +3,12 @@ const axios =require('axios');
 const cors = require('cors');
 const querystring =require('querystring');
 const cookieParser = require('cookie-parser');
-//const { response } = require('express');
+const jwt = require('jsonwebtoken');
 
 const client_id=process.env.SPOTIFY_CLIENT_ID 
 const client_secret=process.env.SPOTIFY_CLIENT_SECRET 
-const redirect_uri=process.env.REDIRECT_URI || 
-'http://localhost:8888/callback'
+const redirect_uri= 'http://localhost:8888/callback'
+
 
 //generate  token
 const randomString = function(length){
@@ -37,7 +37,7 @@ server.get('/login', function(req, res) {
   const state = randomString(16);
   res.cookie(stateKey,state);
 
-  const scopes = 'user-read-private user-read-email user-read-recently-played user-top-read playlist-read-private';
+  const scopes = 'user-read-private user-read-email user-read-recently-played user-read-playback-state';
 
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -50,7 +50,7 @@ server.get('/login', function(req, res) {
     console.log('REDIRECTING', state, scopes, redirect_uri)
 });
 
-//try to fix:
+//try to fix(fixed):
 //change to async function, use try/await block
 server.get('/callback', async function(req, res) {
   const code = req.query.code || null;
@@ -110,7 +110,7 @@ server.get('/callback', async function(req, res) {
               console.log ('Logging in', getRes.data);
             }
 
-            res.redirect('http://localhost:3000/playlist/#' || process.env.FRONTEND_URI + querystring.stringify({
+            res.redirect('http://localhost:3000/#' + querystring.stringify({
               access_token:access_token,
               refresh_token:refresh_token
             })
