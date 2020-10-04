@@ -3,9 +3,8 @@ const axios =require('axios');
 const cors = require('cors');
 const querystring =require('querystring');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 
-const client_id=process.env.SPOTIFY_CLIENT_ID 
+const client_id=process.env.SPOTIFY_CLIENT_ID
 const client_secret=process.env.SPOTIFY_CLIENT_SECRET 
 const redirect_uri= 'http://localhost:8888/callback'
 
@@ -135,8 +134,6 @@ server.get('/callback', async function(req, res) {
     }); //end of call
     
     
-
-
 
 server.get('/refresh_token', function (req,res){
   //request refresh token
