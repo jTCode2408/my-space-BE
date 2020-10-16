@@ -4,9 +4,9 @@ const cors = require('cors');
 const querystring =require('querystring');
 const cookieParser = require('cookie-parser');
 
-const client_id=process.env.SPOTIFY_CLIENT_ID || '97a6dd834548478295bdb781f20e6f19'
-const client_secret=process.env.SPOTIFY_CLIENT_SECRET || 'b1995e93d7ed4797b0406e4c6c6dab8e'
-const redirect_uri= 'http://localhost:8888/callback'
+const client_id=process.env.SPOTIFY_CLIENT_ID 
+const client_secret=process.env.SPOTIFY_CLIENT_SECRET 
+const redirect_uri= process.env.REDIRECT_URI || 'http://localhost:8888/callback' 
 
 
 //generate  token
@@ -109,7 +109,7 @@ server.get('/callback', async function(req, res) {
               console.log ('Logging in', getRes.data);
             }
 
-            res.redirect('http://localhost:3000/playlist/#' + querystring.stringify({
+            res.redirect(process.env.FRONTEND_URI || 'http://localhost:3000/playlist/#' + querystring.stringify({
               access_token:access_token,
               refresh_token:refresh_token
             })
